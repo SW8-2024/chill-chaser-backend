@@ -1,0 +1,19 @@
+services:
+  db:
+    image: postgres:16.2
+    environment:
+      POSTGRES_USER: chillchaser_user
+      POSTGRES_DB: chillchaser_db
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+    secrets:
+      - chillchaser_user
+      - chillchaser_db
+    ports:
+      - 5432:5432
+    volumes:
+      - ~/apps/postgres:/var/lib/ChillChaser/db
+secrets:
+  db_password:
+    file: ./db_password.txt
+  
+    

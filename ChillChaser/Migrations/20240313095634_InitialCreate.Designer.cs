@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace ChillChaser.Migrations
 {
-    [DbContext(typeof(ApplicationDbContext))]
+    [DbContext(typeof(CCDbContext))]
     [Migration("20240313095634_InitialCreate")]
     partial class InitialCreate
     {

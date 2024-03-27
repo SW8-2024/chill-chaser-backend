@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using Microsoft.AspNetCore.Identity;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ChillChaser.Models.DB
 {
@@ -11,6 +12,7 @@ namespace ChillChaser.Models.DB
         public DateTime ReceivedAt { get; set; }
         public int SourceAppId { get; set; }
         public App SourceApp { get; set; }
-
+        public string UserId { get; set; }
+        public CCUser User { get; set; }        
     }
 }

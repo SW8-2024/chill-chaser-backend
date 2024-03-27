@@ -3,6 +3,7 @@ using System;
 using ChillChaser;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ChillChaser.Migrations
 {
     [DbContext(typeof(CCDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240327120144_AppTable")]
+    partial class AppTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.2");
@@ -30,34 +33,6 @@ namespace ChillChaser.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Apps");
-                });
-
-            modelBuilder.Entity("ChillChaser.Models.DB.AppUsage", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("AppId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime>("From")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("To")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AppId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("AppUsages");
                 });
 
             modelBuilder.Entity("ChillChaser.Models.DB.CCUser", b =>
@@ -286,25 +261,6 @@ namespace ChillChaser.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("ChillChaser.Models.DB.AppUsage", b =>
-                {
-                    b.HasOne("ChillChaser.Models.DB.App", "App")
-                        .WithMany("AppUsage")
-                        .HasForeignKey("AppId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ChillChaser.Models.DB.CCUser", "User")
-                        .WithMany("AppUsage")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("App");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("ChillChaser.Models.DB.Notification", b =>
                 {
                     b.HasOne("ChillChaser.Models.DB.App", "SourceApp")
@@ -377,15 +333,11 @@ namespace ChillChaser.Migrations
 
             modelBuilder.Entity("ChillChaser.Models.DB.App", b =>
                 {
-                    b.Navigation("AppUsage");
-
                     b.Navigation("Notifications");
                 });
 
             modelBuilder.Entity("ChillChaser.Models.DB.CCUser", b =>
                 {
-                    b.Navigation("AppUsage");
-
                     b.Navigation("Notifications");
                 });
 #pragma warning restore 612, 618
