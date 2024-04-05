@@ -2,7 +2,7 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build-env
 WORKDIR /App
 
 # Copy everything
-COPY ./ ./
+COPY ./ChillChaser ./
 # Restore as distinct layers
 RUN dotnet build --configuration Release
 
@@ -10,7 +10,7 @@ RUN dotnet tool install --global dotnet-ef
 
 ENV PATH="$PATH:/root/.dotnet/tools"
 
-RUN dotnet ef migrations bundle  --project ChillChaser -- --environment Production
+RUN dotnet ef migrations bundle -- --environment Production
 
 # Build runtime image
 FROM mcr.microsoft.com/dotnet/aspnet:8.0
