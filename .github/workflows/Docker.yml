@@ -27,6 +27,7 @@ jobs:
         if: ${{ contains(github.ref_name, 'w')}}
         uses: docker/build-push-action@v5
         with:
+          context: ChillChaser/.
           file: ChillChaser/Dockerfile.web
           push: true
           tags: |
@@ -36,6 +37,7 @@ jobs:
         if: ${{ contains(github.ref_name, 'm') }}
         uses: docker/build-push-action@v5
         with:
+          context: ChillChaser/.
           file: ChillChaser/Dockerfile.migration
           push: true
           tags: |

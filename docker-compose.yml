@@ -22,14 +22,14 @@ services:
       start_interval: 1s
       start_period: 80s  
   migrate:
-    image: chill-chaser-migrate:latest
+    image: joms1337/chill-chaser-migrations:latest
     depends_on:
       db:
         condition: service_healthy
     secrets:
       - db_passfile
   api:
-    image: chill-chaser:latest
+    image: joms1337/chill-chaser-web:latest
     depends_on:
       migrate:
         condition: service_completed_successfully
