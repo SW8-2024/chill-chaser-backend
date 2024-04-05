@@ -2,10 +2,13 @@ using ChillChaser;
 using ChillChaser.Models.DB;
 using ChillChaser.Services;
 using ChillChaser.Services.impl;
+using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption.ConfigurationModel;
+using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
+using Microsoft.AspNetCore.DataProtection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,25 +18,32 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+var connectionString = "";
 if (builder.Environment.IsDevelopment())
 {
-    builder.Services.AddDbContext<CCDbContext>(
-    options => options.UseSqlite((new SqliteConnectionStringBuilder()
+    connectionString = (new NpgsqlConnectionStringBuilder()
     {
-        Mode = SqliteOpenMode.ReadWriteCreate,
-        DataSource = "chillchaser.sqlite3"
-    }).ToString()));
+        Host = "db",
+        Database = "chillchaser_db",
+        Username = "chillchaser_user",
+        Password = "password",
+        Port = 5432
+    }).ToString();
 } 
 else
 {
-    builder.Services.AddDbContext<CCDbContext>(
-    options => options.UseSqlite((new NpgsqlConnectionStringBuilder()
+    connectionString = (new NpgsqlConnectionStringBuilder()
     {
-        Username = "chillchaser_user",
+        Host = "db",
         Database = "chillchaser_db",
-        Passfile = "/run/secrets/db_password"
-    }).ToString()));
+        Username = "chillchaser_user",
+        Passfile = "/run/secrets/db_passfile",
+        Port = 5432
+    }).ToString();
 }
+
+builder.Services.AddDbContext<CCDbContext>(
+    options => options.UseNpgsql(connectionString.ToString()));
 
 builder.Services.AddIdentityApiEndpoints<CCUser>()
     .AddEntityFrameworkStores<CCDbContext>();
@@ -74,8 +84,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
-app.UseHttpsRedirection();
 
 app.MapIdentityApi<CCUser>();
 

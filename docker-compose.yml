@@ -1,3 +1,5 @@
+name: chill-chaser-server
+
 services:
   db:
     image: postgres:16.2
@@ -6,14 +8,43 @@ services:
       POSTGRES_DB: chillchaser_db
       POSTGRES_PASSWORD_FILE: /run/secrets/db_password
     secrets:
-      - chillchaser_user
-      - chillchaser_db
+      - db_password
     ports:
-      - 5432:5432
+      - 1234:5432
+    hostname: db
     volumes:
-      - ~/apps/postgres:/var/lib/ChillChaser/db
+      - ~/apps/postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready", "-d", "db_prod"]
+      interval: 30s
+      timeout: 15s
+      retries: 5
+      start_interval: 1s
+      start_period: 80s  
+  migrate:
+    image: joms1337/chill-chaser-migrations:latest
+    depends_on:
+      db:
+        condition: service_healthy
+    secrets:
+      - db_passfile
+  api:
+    image: joms1337/chill-chaser-web:latest
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      db:
+        condition: service_healthy
+    secrets:
+      - db_passfile
+    ports:
+      - 80:8080
+    volumes:
+      - ~/apps/chill-chaser/:/root/.aspnet/DataProtection-Keys
 secrets:
   db_password:
     file: ./db_password.txt
+  db_passfile:
+    file: ./db_passfile.txt
   
     

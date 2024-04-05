@@ -43,3 +43,5 @@ msbuild.err
 msbuild.wrn
 db_password.txt
 chillchaser.sqlite3*
+chillchaser.sqlite3
+db_passfile.txt

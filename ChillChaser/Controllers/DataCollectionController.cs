@@ -88,5 +88,21 @@ namespace ChillChaser.Controllers
 
             return Ok(await appUsageMapped.ToListAsync());
         }
+
+        [HttpGet("leak", Name = "Leak")]
+        [ProducesResponseType(typeof(GetAppUsageResponse), 200)]
+        public async Task<IActionResult> Leak()
+        {
+            var appUsageMapped = from appUsage in _ctx.AppUsages
+                                 select new GetAppUsageResponse
+                                 {
+                                     Id = appUsage.Id,
+                                     AppName = appUsage.App.Name,
+                                     From = appUsage.From,
+                                     To = appUsage.To,
+                                 };
+
+            return Ok(await appUsageMapped.ToListAsync());
+        }
     }
 }
