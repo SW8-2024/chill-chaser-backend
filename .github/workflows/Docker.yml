@@ -28,7 +28,6 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           file: ChillChaser/Dockerfile.web
-          context: ChillChaser
           push: true
           tags: |
             ${{vars.DOCKER_USERNAME}}/${{vars.DOCKER_WEB_REPO}}:latest
@@ -38,7 +37,6 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           file: ChillChaser/Dockerfile.migration
-          context: ChillChaser
           push: true
           tags: |
             ${{vars.DOCKER_USERNAME}}/${{vars.DOCKER_MIGRATION_REPO}}:latest
