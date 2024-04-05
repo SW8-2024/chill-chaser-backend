@@ -29,9 +29,9 @@ jobs:
           file: ChillChaser/Dockerfile.web
           context: ChillChaser
           push: true
-          tags:
-            - ${{secrets.DOCKER_USERNAME}}/${{env.DOCKER_WEB_REPO}}:latest
-            - ${{secrets.DOCKER_USERNAME}}/${{env.DOCKER_WEB_REPO}}:${{steps.regex-match.outputs.group1}}
+          tags: |
+            ${{secrets.DOCKER_USERNAME}}/${{env.DOCKER_WEB_REPO}}:latest
+            ${{secrets.DOCKER_USERNAME}}/${{env.DOCKER_WEB_REPO}}:${{steps.regex-match.outputs.group1}}
       - name: Build and push migration package
         if: ${{ contains(github.ref_name, 'm') }}
         uses: docker/build-push-action@v5
@@ -39,6 +39,6 @@ jobs:
           file: ChillChaser/Dockerfile.migration
           context: ChillChaser
           push: true
-          tags:
-            - ${{secrets.DOCKER_USERNAME}}/${{env.DOCKER_MIGRATION_REPO}}:latest
-            - ${{secrets.DOCKER_USERNAME}}/${{env.DOCKER_MIGRATION_REPO}}:${{steps.regex-match.outputs.group1}}
+          tags: |
+            ${{secrets.DOCKER_USERNAME}}/${{env.DOCKER_MIGRATION_REPO}}:latest
+            ${{secrets.DOCKER_USERNAME}}/${{env.DOCKER_MIGRATION_REPO}}:${{steps.regex-match.outputs.group1}}
