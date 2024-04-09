@@ -13,12 +13,13 @@ services:
     volumes:
       - ~/apps/postgres:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready", "-d", "db_prod"]
+      test: ["CMD-SHELL", "pg_isready -U chillchaser_user -d chillchaser_db"]
       interval: 30s
       timeout: 15s
       retries: 5
       start_interval: 1s
       start_period: 80s  
+    restart: always
   migrate:
     image: joms1337/chill-chaser-migrations:latest
     depends_on:
@@ -39,6 +40,7 @@ services:
       - 2345:8080
     volumes:
       - ~/apps/chill-chaser/:/root/.aspnet/DataProtection-Keys
+    restart: always
 secrets:
   db_password:
     file: ./db_password.txt
