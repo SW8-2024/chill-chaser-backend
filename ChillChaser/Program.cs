@@ -92,7 +92,7 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.MapGet("/robots.txt", () => {
-    return "User-agent: Googlebot\nDisallow: /admin/flag.txt\n\nUser-agent: *\nAllow: /";
+    return "User-agent: Googlebot\nDisallow: /admin/flag.txt\n\nUser-agent: *\nAllow: /\n";
 }).ExcludeFromDescription();
 
 
