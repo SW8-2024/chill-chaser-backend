@@ -22,6 +22,14 @@ jobs:
       - name: Build and push to local registry
         uses: docker/build-push-action@v5
         with:
+          file: Dockerfile.web
+          context: .
+          push: true
+          tags: localhost:5000/name/app:latest
+      - name: Build and push to local registry
+        uses: docker/build-push-action@v5
+        with:
+          file: Dockerfile.migration
           context: .
           push: true
           tags: localhost:5000/name/app:latest
