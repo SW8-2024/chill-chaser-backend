@@ -9,6 +9,7 @@ using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -78,17 +79,25 @@ builder.Services.AddTransient<IAppUsageService, AppUsageService>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI(options => {
+	options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
+	options.RoutePrefix = "swagger";
+});
 
 app.MapIdentityApi<CCUser>();
 
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapGet("/robots.txt", () => {
+    return "User-agent: Googlebot\nDisallow: /admin/flag.txt\n\nUser-agent: *\nAllow: /";
+}).ExcludeFromDescription();
+
+
+app.MapGet("/admin/flag.txt", () => {
+	return "cWatch{Ch1ll-Ch453r}";
+}).ExcludeFromDescription();
 
 app.Run();
