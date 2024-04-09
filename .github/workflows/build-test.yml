@@ -25,14 +25,18 @@ jobs:
           file: Dockerfile.web
           context: .
           push: true
-          tags: localhost:5000/name/app:latest
+          tags: localhost:5000/name/web:latest
       - name: Build and push to local registry
         uses: docker/build-push-action@v5
         with:
           file: Dockerfile.migration
           context: .
           push: true
-          tags: localhost:5000/name/app:latest
-      - name: Inspect
+          tags: localhost:5000/name/migrations:latest
+      - name: Inspect web
         run: |
-          docker buildx imagetools inspect localhost:5000/name/app:latest    
+          docker buildx imagetools inspect localhost:5000/name/web:latest
+      - name: Inspect migrations
+        run: |
+          docker buildx imagetools inspect localhost:5000/name/migrations:latest    
+          
