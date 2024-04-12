@@ -43,7 +43,6 @@ jobs:
           INTEGRATED_ENVIRONMENT:
         with:
           run: |
-            docker login localhost:5000
             docker compose up -d
           post: docker compose down
       - name: Run E2E tests
