@@ -43,6 +43,8 @@ jobs:
           INTEGRATED_ENVIRONMENT:
         with:
           run: |
+            echo "password" > db_password.txt
+            echo "db:5432:chillchaser_db:chillchaser_user:password" > db_passfile.txt 
             docker compose up -d
           post: docker compose down
       - name: Run E2E tests
