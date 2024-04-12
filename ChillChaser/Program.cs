@@ -24,7 +24,7 @@ if (builder.Environment.IsDevelopment())
 {
     connectionString = (new NpgsqlConnectionStringBuilder()
     {
-        Host = "db",
+        Host = "localhost",
         Database = "chillchaser_db",
         Username = "chillchaser_user",
         Password = "password",
