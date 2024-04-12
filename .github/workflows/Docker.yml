@@ -35,6 +35,8 @@ jobs:
             ${{vars.DOCKER_USERNAME}}/${{vars.DOCKER_MIGRATION_REPO}}:latest
             ${{vars.DOCKER_USERNAME}}/${{vars.DOCKER_MIGRATION_REPO}}:${{ github.ref_name }}
   release-artifacts:
+    permissions:
+      contents: write
     name: 'Generate release artifacts'
     runs-on: ubuntu-latest
     steps:
