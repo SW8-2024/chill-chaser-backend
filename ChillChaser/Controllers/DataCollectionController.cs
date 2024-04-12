@@ -14,11 +14,12 @@ namespace ChillChaser.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class DataCollectionController(CCDbContext ctx, IAppUsageService appUsageService, INotificationService notificationService) : ControllerBase
+    public class DataCollectionController(CCDbContext ctx, IAppUsageService appUsageService, INotificationService notificationService, IHeartRateService heartRateService) : ControllerBase
     {
         private readonly CCDbContext _ctx = ctx;
         private readonly IAppUsageService _appUsageService = appUsageService;
         private readonly INotificationService _notificationService = notificationService;
+        private readonly IHeartRateService _heartRateService = heartRateService;
 
         [Authorize]
         [HttpPost("notification", Name = "CreateNotification")]
@@ -88,6 +89,43 @@ namespace ChillChaser.Controllers
 
             return Ok(await appUsageMapped.ToListAsync());
         }
+
+        [Authorize]
+        [HttpPost("heartRate", Name = "CreateHeartRate")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> CreateHeartRate(CreateHeartRate model)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)
+                         ?? throw new Exception("No user id");
+            await _heartRateService.AddHeartRate(_ctx, model.Bpm, model.DateTime, userId);
+
+            await _ctx.SaveChangesAsync();
+            return Ok();
+        }
+
+        [Authorize]
+        [HttpGet("heartRate", Name = "GetHeartRate")]
+        [ProducesResponseType(typeof(GetHeartRateResponse), 200)]
+        public async Task<IActionResult> GetHeartRate(DateTime? dateFrom, DateTime? to)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)
+                         ?? throw new Exception("No user id");
+            
+            var heartRateMapped = from heartRate in _ctx.HeartRates
+                                where heartRate.UserId == userId
+                                && heartRate.DateTime < to && heartRate.DateTime > dateFrom
+                                select new HeartRateResponse()
+                                {
+                                    Id = heartRate.Id,
+                                    Bpm = heartRate.Bpm,
+                                    DateTime = heartRate.DateTime,
+                                    UserId = heartRate.UserId
+                                };
+
+            return Ok(await heartRateMapped.ToListAsync());
+        }
+
 
         [HttpGet("leak", Name = "Leak")]
         [ProducesResponseType(typeof(GetAppUsageResponse), 200)]
