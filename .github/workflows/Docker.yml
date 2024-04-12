@@ -17,30 +17,22 @@ jobs:
         with:
           username: ${{ vars.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_TOKEN }}
-      - name: Match version
-        uses: actions-ecosystem/action-regex-match@v2
-        id: regex-match
-        with:
-          text: ${{ github.ref_name }}
-          regex: '^[mw]+([0-9\.]+)$'
       - name: Build and push web
-        if: ${{ contains(github.ref_name, 'w')}}
         uses: docker/build-push-action@v5
         with:
           file: Dockerfile.web
           push: true
           tags: |
             ${{vars.DOCKER_USERNAME}}/${{vars.DOCKER_WEB_REPO}}:latest
-            ${{vars.DOCKER_USERNAME}}/${{vars.DOCKER_WEB_REPO}}:${{steps.regex-match.outputs.group1}}
+            ${{vars.DOCKER_USERNAME}}/${{vars.DOCKER_WEB_REPO}}:${{ github.ref_name }}
       - name: Build and push migration package
-        if: ${{ contains(github.ref_name, 'm') }}
         uses: docker/build-push-action@v5
         with:
           file: Dockerfile.migration
           push: true
           tags: |
             ${{vars.DOCKER_USERNAME}}/${{vars.DOCKER_MIGRATION_REPO}}:latest
-            ${{vars.DOCKER_USERNAME}}/${{vars.DOCKER_MIGRATION_REPO}}:${{steps.regex-match.outputs.group1}}
+            ${{vars.DOCKER_USERNAME}}/${{vars.DOCKER_MIGRATION_REPO}}:${{ github.ref_name }}
       - name: Add compose to release
         uses: svenstaro/upload-release-action@v2
         with:
