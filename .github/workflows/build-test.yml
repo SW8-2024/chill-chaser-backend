@@ -13,6 +13,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.x
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx
@@ -33,10 +36,18 @@ jobs:
           context: .
           push: true
           tags: localhost:5000/name/migrations:latest
-      - name: Inspect web
-        run: |
-          docker buildx imagetools inspect localhost:5000/name/web:latest
-      - name: Inspect migrations
-        run: |
-          docker buildx imagetools inspect localhost:5000/name/migrations:latest    
+      
+      - name: Start docker compose environment
+        uses: gacts/run-and-post-run@v1
+        env: 
+          INTEGRATED_ENVIRONMENT:
+        with:
+          run: |
+            docker login localhost:5000
+            docker compose up -d
+          post: docker compose down
+      - name: Run E2E tests
+        run: dotnet test
+      - name: Shut down docker
+        run: docker compose down
           

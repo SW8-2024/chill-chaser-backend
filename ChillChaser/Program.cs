@@ -107,3 +107,5 @@ app.MapGet("/", () => {
 }).ExcludeFromDescription();
 
 app.Run();
+
+public partial class Program { }
