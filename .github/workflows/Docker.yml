@@ -5,6 +5,7 @@ on:
       - "*"
 jobs:
   docker:
+    name: 'Build and publish docker images'
     runs-on: ubuntu-latest
     environment: Docker
     steps:
@@ -17,13 +18,6 @@ jobs:
         with:
           username: ${{ vars.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_TOKEN }}
-      - name: Add version to docker-compose
-        uses: fjogeleit/yaml-update-action@main
-        with:
-          valueFile: 'Dockerfile.web'
-          propertyPath: 'services.api.environment[0]'
-          value: ${{ github.ref_name }}
-          commitChange: false
       - name: Build and push web
         uses: docker/build-push-action@v5
         with:
@@ -40,6 +34,17 @@ jobs:
           tags: |
             ${{vars.DOCKER_USERNAME}}/${{vars.DOCKER_MIGRATION_REPO}}:latest
             ${{vars.DOCKER_USERNAME}}/${{vars.DOCKER_MIGRATION_REPO}}:${{ github.ref_name }}
+  release-artifacts:
+    permissions:
+      contents: write
+    name: 'Generate release artifacts'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Add version to docker-compose
+        uses: mikefarah/yq@master
+        with:
+          cmd: yq -i '.services.api.environment[0] = "CC_IMAGE_VERSION=${{ github.ref_name }}"' 'docker-compose.yml'
       - name: Add compose to release
         uses: svenstaro/upload-release-action@v2
         with:
