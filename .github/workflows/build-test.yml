@@ -50,7 +50,7 @@ jobs:
       - name: Run E2E tests in integrated environment
         env: 
           INTEGRATED_ENVIRONMENT: yes
-        run: 'dotnet test --logger:"console;verbosity=detailed"'
+        run: 'dotnet test'
       - name: Shut down docker
         run: docker compose down
           
