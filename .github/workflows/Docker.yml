@@ -17,6 +17,13 @@ jobs:
         with:
           username: ${{ vars.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_TOKEN }}
+      - name: Add version to docker-compose
+        uses: fjogeleit/yaml-update-action@main
+        with:
+          valueFile: 'Dockerfile.web'
+          propertyPath: 'services.api.environment[0]'
+          value: ${{ github.ref_name }}
+          commitChange: false
       - name: Build and push web
         uses: docker/build-push-action@v5
         with:

@@ -41,6 +41,8 @@ services:
     volumes:
       - ~/apps/chill-chaser/:/root/.aspnet/DataProtection-Keys
     restart: always
+    environment:
+      - CC_IMAGE_VERSION=0.0.0
 secrets:
   db_password:
     file: ./db_password.txt
