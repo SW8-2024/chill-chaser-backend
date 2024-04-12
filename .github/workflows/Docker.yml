@@ -40,12 +40,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Add version to docker-compose
-        uses: fjogeleit/yaml-update-action@main
+        uses: mikefarah/yq@master
         with:
-          valueFile: 'Dockerfile.web'
-          propertyPath: 'services.api.environment[0]'
-          value: 'CC_IMAGE_VERSION=${{ github.ref_name }}'
-          commitChange: false
+          cmd: yq -i '.services.api.environment[0] = "CC_IMAGE_VERSION=${{ github.ref_name }}"' 'docker-compose.yml'
       - name: Add compose to release
         uses: svenstaro/upload-release-action@v2
         with:
