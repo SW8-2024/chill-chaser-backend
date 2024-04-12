@@ -22,7 +22,7 @@ jobs:
         with:
           valueFile: 'Dockerfile.web'
           propertyPath: 'services.api.environment[0]'
-          value: ${{ github.ref_name }}
+          value: 'CC_IMAGE_VERSION=${{ github.ref_name }}'
           commitChange: false
       - name: Build and push web
         uses: docker/build-push-action@v5
