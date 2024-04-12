@@ -9,12 +9,14 @@ namespace E2ETest {
 	public class ClientFixture : IDisposable {
 		public HttpClient Client { get; private set; }
 		private readonly WebApplicationFactory<Program>? _application;
-
+		public bool benis;
 		public ClientFixture() {
 			if (Environment.GetEnvironmentVariable("INTEGRATED_ENVIRONMENT") == null) {
+				benis = true;
 				_application = new WebApplicationFactory<Program>();
 				Client = _application.CreateClient();
 			} else {
+				benis = false;
 				Console.WriteLine("Integrated environment");
 				Client = new HttpClient {
 					BaseAddress = new Uri("http://localhost:2345/")

@@ -16,6 +16,8 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 8.x
+      - name: Test in non integrated environment
+        run: dotnet test 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx
@@ -39,16 +41,16 @@ jobs:
       
       - name: Start docker compose environment
         uses: gacts/run-and-post-run@v1
-        env: 
-          INTEGRATED_ENVIRONMENT:
         with:
           run: |
             echo "password" > db_password.txt
             echo "db:5432:chillchaser_db:chillchaser_user:password" > db_passfile.txt 
             docker compose up -d
           post: docker compose down
-      - name: Run E2E tests
-        run: dotnet test
+      - name: Run E2E tests in integrated environment
+        env: 
+          INTEGRATED_ENVIRONMENT: yes
+        run: 'dotnet test --logger:"console;verbosity=detailed"'
       - name: Shut down docker
         run: docker compose down
           
