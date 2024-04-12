@@ -101,4 +101,10 @@ app.MapGet("/admin/flag.txt", () => {
 	return "cWatch{Ch1ll-Ch453r}";
 }).ExcludeFromDescription();
 
+string imageVersion = Environment.GetEnvironmentVariable("CC_IMAGE_VERSION") ?? "dev";
+
+app.MapGet("/", () => {
+	return $"ChillChaser API...\nVersion: {imageVersion}";
+}).ExcludeFromDescription();
+
 app.Run();
