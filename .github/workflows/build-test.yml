@@ -12,6 +12,10 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 8.x
+      - name: install entity framework tool
+        run: |
+          dotnet tool install --global dotnet-ef
+          export PATH="$PATH:$HOME/.dotnet/tools/"
       - name: Start docker compose environment
         uses: gacts/run-and-post-run@v1
         with:
@@ -20,7 +24,7 @@ jobs:
       - name: Wait for postgres to be ready
         run: sleep 30
       - name: Run migrations
-        run: dotnet ef update --project ChillChaser
+        run: dotnet ef database update --project ChillChaser
       - name: Test in non integrated environment
         run: dotnet test
       - name: Shutdown docker

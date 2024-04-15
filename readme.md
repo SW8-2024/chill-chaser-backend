@@ -8,6 +8,6 @@
 1. Install ef tool `dotnet tool install --global dotnet-ef`
 2. Start the development docker compose environment `docker compose -f docker-compose.dev.yml up` (optonally use the `-d` flag at the end to run it in the background)
 3. Wait for postgres to be ready
-4. Run all migrations `dotnet ef update --project ChillChaser`
+4. Run all migrations `dotnet ef database update --project ChillChaser`
 5. Now the API can be started
 6. When done, shutdown the docker compose container by running `docker compose -f docker-compose.dev.yml down` if run in detached mode or `ctrl+c` if in non detached mode.
