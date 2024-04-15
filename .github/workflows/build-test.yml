@@ -12,8 +12,6 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 8.x
-      - uses: docker-practice/actions-setup-docker@master
-        timeout-minutes: 5
       - name: Start docker compose environment
         uses: gacts/run-and-post-run@v1
         with:
