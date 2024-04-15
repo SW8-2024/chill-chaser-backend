@@ -24,11 +24,11 @@ if (builder.Environment.IsDevelopment())
 {
     connectionString = (new NpgsqlConnectionStringBuilder()
     {
-        Host = "db",
+        Host = "127.0.0.1",
         Database = "chillchaser_db",
         Username = "chillchaser_user",
         Password = "password",
-        Port = 5432
+        Port = 5555
     }).ToString();
 } 
 else

@@ -3,7 +3,32 @@ name: build-test
 on: [ push ]
 
 jobs:
-  docker:
+  test-dev-environment:
+    name: Test in development environment
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.x
+      - uses: docker-practice/actions-setup-docker@master
+        timeout-minutes: 5
+      - name: Start docker compose environment
+        uses: gacts/run-and-post-run@v1
+        with:
+          run: docker compose -f docker-compose.dev.yml up -d
+          post: docker compose -f docker-compose.dev.yml down
+      - name: Wait for postgres to be ready
+        run: sleep 30
+      - name: Run migrations
+        run: dotnet ef update --project ChillChaser
+      - name: Test in non integrated environment
+        run: dotnet test
+      - name: Shutdown docker
+        run: docker compose -f docker-compose.dev.yml down
+  test-prod-environment:
+    name: Test in production environemnt
     runs-on: ubuntu-latest
     services:
       registry:
@@ -11,13 +36,6 @@ jobs:
         ports:
           - 5000:5000
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: 8.x
-      - name: Test in non integrated environment
-        run: dotnet test 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx

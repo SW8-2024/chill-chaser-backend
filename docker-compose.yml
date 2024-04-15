@@ -2,24 +2,13 @@ name: chill-chaser-server
 
 services:
   db:
-    image: postgres:16.2
-    environment:
-      POSTGRES_USER: chillchaser_user
-      POSTGRES_DB: chillchaser_db
+    extends:
+      file: docker-db-service.yml
+      service: db
+    environment: 
       POSTGRES_PASSWORD_FILE: /run/secrets/db_password
     secrets:
       - db_password
-    hostname: db
-    volumes:
-      - ~/apps/postgres:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U chillchaser_user -d chillchaser_db && timeout 1 bash -c 'cat < /dev/null > /dev/tcp/db/5432'"]
-      interval: 30s
-      timeout: 15s
-      retries: 5
-      start_interval: 1s
-      start_period: 80s  
-    restart: always
   migrate:
     image: joms1337/chill-chaser-migrations:latest
     depends_on:
