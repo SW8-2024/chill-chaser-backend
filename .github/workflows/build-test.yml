@@ -60,7 +60,11 @@ jobs:
           context: .
           push: true
           tags: localhost:5000/name/migrations:latest
-      
+      - name: Change images to local versions
+        uses: mikefarah/yq@master
+        with:
+          cmd: yq -i '.services.api.image = "localhost:5000/name/web:latest" | .services.migrate.image = "localhost:5000/name/migrations:latest"' 'docker-compose.yml'
+     
       - name: Start docker compose environment
         uses: gacts/run-and-post-run@v1
         with:
