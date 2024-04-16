@@ -76,6 +76,7 @@ builder.Services.Configure<IdentityOptions>(options =>
 builder.Services.AddTransient<IAppService, AppService>();
 builder.Services.AddTransient<INotificationService, NotificationService>();
 builder.Services.AddTransient<IAppUsageService, AppUsageService>();
+builder.Services.AddTransient<IHeartRateService, HeartRateService>();
 
 var app = builder.Build();
 

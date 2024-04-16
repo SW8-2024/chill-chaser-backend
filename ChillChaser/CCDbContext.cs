@@ -11,5 +11,6 @@ namespace ChillChaser
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<AppUsage> AppUsages { get; set; }
         public DbSet<App> Apps { get; set; }
+        public DbSet<HeartRate> HeartRates { get; set; }
     }
 }
