@@ -52,3 +52,10 @@ jobs:
           file: docker-compose.yml
           asset_name: docker-compose.yml
           tag: ${{ github.ref }}
+      - name: Add compose to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: docker-db-service.yml
+          asset_name: docker-db-service.yml
+          tag: ${{ github.ref }}
