@@ -1,0 +1,11 @@
+name: chill-chaser-server
+
+services: 
+  db:
+    extends:
+      file: docker-db-service.yml
+      service: db
+    environment: 
+      POSTGRES_PASSWORD: 'password'
+    ports:
+      - 5555:5432

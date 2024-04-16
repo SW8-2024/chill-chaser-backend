@@ -28,7 +28,7 @@ if (builder.Environment.IsDevelopment())
         Database = "chillchaser_db",
         Username = "chillchaser_user",
         Password = "password",
-        Port = 5432
+        Port = 5555
     }).ToString();
 } 
 else
@@ -108,3 +108,5 @@ app.MapGet("/", () => {
 }).ExcludeFromDescription();
 
 app.Run();
+
+public partial class Program { }
