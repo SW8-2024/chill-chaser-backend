@@ -3,7 +3,34 @@ name: build-test
 on: [ push ]
 
 jobs:
-  docker:
+  test-dev-environment:
+    name: Test in development environment
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.x
+      - name: install entity framework tool
+        run: |
+          dotnet tool install --global dotnet-ef
+          export PATH="$PATH:$HOME/.dotnet/tools/"
+      - name: Start docker compose environment
+        uses: gacts/run-and-post-run@v1
+        with:
+          run: docker compose -f docker-compose.dev.yml up -d
+          post: docker compose -f docker-compose.dev.yml down
+      - name: Wait for postgres to be ready
+        run: sleep 30
+      - name: Run migrations
+        run: dotnet ef database update --project ChillChaser
+      - name: Test in non integrated environment
+        run: dotnet test
+      - name: Shutdown docker
+        run: docker compose -f docker-compose.dev.yml down
+  test-prod-environment:
+    name: Test in production environemnt
     runs-on: ubuntu-latest
     services:
       registry:
@@ -33,10 +60,23 @@ jobs:
           context: .
           push: true
           tags: localhost:5000/name/migrations:latest
-      - name: Inspect web
-        run: |
-          docker buildx imagetools inspect localhost:5000/name/web:latest
-      - name: Inspect migrations
-        run: |
-          docker buildx imagetools inspect localhost:5000/name/migrations:latest    
+      - name: Change images to local versions
+        uses: mikefarah/yq@master
+        with:
+          cmd: yq -i '.services.api.image = "localhost:5000/name/web:latest" | .services.migrate.image = "localhost:5000/name/migrations:latest"' 'docker-compose.yml'
+     
+      - name: Start docker compose environment
+        uses: gacts/run-and-post-run@v1
+        with:
+          run: |
+            echo "password" > db_password.txt
+            echo "db:5432:chillchaser_db:chillchaser_user:password" > db_passfile.txt 
+            docker compose up -d
+          post: docker compose down
+      - name: Run E2E tests in integrated environment
+        env: 
+          INTEGRATED_ENVIRONMENT: yes
+        run: 'dotnet test'
+      - name: Shut down docker
+        run: docker compose down
           
