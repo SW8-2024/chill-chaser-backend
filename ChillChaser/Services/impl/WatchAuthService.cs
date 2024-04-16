@@ -14,20 +14,20 @@ namespace ChillChaser.Services.impl {
 		}
 
 		public async Task<string> WaitForAuth(string sessionToken) {
-				var taskCompletionSource = new TaskCompletionSource<string>();
-				try {
-					_authSessions.Add(sessionToken, new WatchAuthSession {
-						Token = sessionToken,
-						Expires = DateTime.Now.AddMinutes(10),
-						TaskCompletionSource = taskCompletionSource
-					});
-					return await taskCompletionSource.Task;
-				} catch (ArgumentException) {
-					throw new TokenAlreadyUsedException("Given token is already used");
-				} catch {
-					_authSessions.Remove(sessionToken);
-					throw;
-				}
-	}
+			var taskCompletionSource = new TaskCompletionSource<string>();
+			try {
+				_authSessions.Add(sessionToken, new WatchAuthSession {
+					Token = sessionToken,
+					Expires = DateTime.Now.AddMinutes(10),
+					TaskCompletionSource = taskCompletionSource
+				});
+				return await taskCompletionSource.Task;
+			} catch (ArgumentException) {
+				throw new TokenAlreadyUsedException("Given token is already used");
+			} catch {
+				_authSessions.Remove(sessionToken);
+				throw;
+			}
+		}
 	}
 }
