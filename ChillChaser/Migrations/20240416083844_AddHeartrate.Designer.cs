@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ChillChaser.Migrations
 {
     [DbContext(typeof(CCDbContext))]
-    [Migration("20240416075924_AddHeartrate")]
+    [Migration("20240416083844_AddHeartrate")]
     partial class AddHeartrate
     {
         /// <inheritdoc />
