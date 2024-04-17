@@ -1,4 +1,4 @@
-name: chill-chaser-server
+name: chill-chaser-server-dev-env
 
 services: 
   db:
