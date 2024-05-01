@@ -4,6 +4,6 @@ namespace ChillChaser.Services
 {
     public interface IAppUsageService
     {
-        Task AddAppUsage(CCDbContext ctx, DateTime from, DateTime to, AppSession[] sessions, string appName, string userId);
+        Task AddAppUsage(CCDbContext ctx, IEnumerable<CreateAppUsage> sessions, string userId);
     }
 }

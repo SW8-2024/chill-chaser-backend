@@ -4,7 +4,7 @@
     {
         public required DateTime From { get; set; }
         public required DateTime To { get; set; }
-        public required  AppSession[] Sessions {get; set;}
+        public required  ICollection<AppSession> Sessions {get; set;}
         public required string AppName { get; set; }
     }
 }

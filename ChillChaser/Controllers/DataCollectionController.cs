@@ -59,14 +59,11 @@ namespace ChillChaser.Controllers
 
         [Authorize]
         [HttpPost("app-usage", Name = "CreateAppUsage")]
-        public async Task<IActionResult> CreateAppUsage(CreateAppUsage[] model)
+        public async Task<IActionResult> CreateAppUsage(IEnumerable<CreateAppUsage> model)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)
                     ?? throw new Exception("No user id");
-            foreach (var elem in model){
-                await _appUsageService.AddAppUsage(_ctx, elem.From, elem.To, elem.Sessions, elem.AppName, userId);
-            }
-            
+            await _appUsageService.AddAppUsage(_ctx, model, userId);
             await _ctx.SaveChangesAsync();
             return Ok();
         }

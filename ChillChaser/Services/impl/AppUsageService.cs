@@ -9,32 +9,40 @@ namespace ChillChaser.Services.impl
 {
     public class AppUsageService(IAppService appService) : IAppUsageService
     {
-        public async Task AddAppUsage(CCDbContext ctx, DateTime fromVar, DateTime to, AppSession[] sessions, string appName, string userId)
+        public async Task AddAppUsage(CCDbContext ctx, IEnumerable<CreateAppUsage> appUsages, string userId)
         {
-            var app = await appService.CreateOrGetApp(ctx, appName);
-            foreach (var elem in sessions){
-                var existingSessions = (from appUsage in ctx.AppUsages
-                    where appUsage.UserId == userId && appUsage.App == app && (appUsage.From == elem.From || appUsage.To == elem.To)     
-                    select appUsage).ToList();
-                
-                if (!existingSessions.Any()){
-                    app.AppUsage.Add(new AppUsage
+            foreach (var usage in appUsages)
+            {
+                var app = await appService.CreateOrGetApp(ctx, usage.AppName);
+                var existingSessionsForApp = (from appUsage in ctx.AppUsages
+                    where appUsage.UserId == userId && appUsage.App == app
+                    select appUsage);
+
+                foreach (var session in usage.Sessions)
+                {
+                    var sessionWithSameTime = (from appUsage in existingSessionsForApp
+                        where appUsage.From == session.From || appUsage.To == session.To
+                        select appUsage);
+                    if (!sessionWithSameTime.Any())
+                    {
+                        app.AppUsage.Add(new AppUsage
                         {
-                            From = elem.From,
-                            To = elem.To,
+                            From = session.From,
+                            To = session.To,
                             UserId = userId,
                             App = app
-                    });
-                }
-                else
-                {
-                    foreach (var session in existingSessions)
-                    {
-                        session.To = elem.To;
+                        });
                     }
-                }         
+                    else
+                    {
+                        foreach (var usageToUpdate in sessionWithSameTime)
+                        {
+                            usageToUpdate.To = usage.To;
+                        }
+                    }
+                }
             }
-            
+            await ctx.SaveChangesAsync();
         }
     }
 }
