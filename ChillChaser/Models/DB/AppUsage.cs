@@ -1,6 +1,10 @@
-﻿namespace ChillChaser.Models.DB
+﻿using Microsoft.EntityFrameworkCore;
+using System.Xml.Linq;
+
+namespace ChillChaser.Models.DB
 {
-    public class AppUsage
+	[Index(nameof(From), nameof(AppId), nameof(UserId), IsUnique = true, Name = "from_app_user_ui")]
+	public class AppUsage
     {
         public int Id { get; set; }
         public DateTime From { get; set; }
