@@ -5,7 +5,7 @@ namespace ChillChaser.Models.DB
     public class CCUser : IdentityUser
     {
         public ICollection<Notification> Notifications { get; set; } = [];
-        public ICollection<AppUsage> AppUsage { get; set; }
+        public ICollection<AppUsage> AppUsage { get; set; } = [];
         public ICollection<HeartRate> HeartRates { get; set; } = [];
     }
 }
