@@ -162,16 +162,13 @@ namespace ChillChaser.Controllers {
 				});
 
 				currentBpm += (rnd.NextDouble() - 0.5);
-
+				if (currentBpm < 25)
+					currentBpm = 25;
+				if (currentBpm > 100)
+					currentBpm = 100;
 			}
 
-			List<List<AppSession>> appUsages = new()
-			{
-				new List<AppSession>(),
-				new List<AppSession>(),
-				new List<AppSession>(),
-				new List<AppSession>()
-			};
+			var appUsages = new List<List<AppSession>>(Enumerable.Repeat(() => new List<AppSession>(), 10).Select(s => s()));
 			DateTime sessionBegin = start;
 
 			for (DateTime current = start; current < end; current = current.AddMinutes(1 + rnd.NextDouble() * 3))
@@ -184,35 +181,18 @@ namespace ChillChaser.Controllers {
 						To = current
 					});
 					sessionBegin = current;
-				} else if (decision < 7)
+				} else if (decision < appUsages.Count + 4)
 				{
 					sessionBegin = current;
 				}
 			}
 			await _ctx.SaveChangesAsync();
-			await _appUsageService.AddAppUsage(_ctx, new List<CreateAppUsage>()
-			{
-				new CreateAppUsage
-				{
-					AppName = "app 1",
-					Sessions = appUsages[0]
-				},
-				new CreateAppUsage
-				{
-					AppName = "app 2",
-					Sessions = appUsages[1]
-				},
-				new CreateAppUsage
-				{
-					AppName = "app 3",
-					Sessions = appUsages[2]
-				},
-				new CreateAppUsage
-				{
-					AppName = "app 4",
-					Sessions = appUsages[3]
-				},
-			}, userId);
+			await _appUsageService.AddAppUsage(_ctx, appUsages.Select((u, i) => new CreateAppUsage {
+				
+					AppName = "app " + i.ToString(),
+					Sessions = u
+				
+			}), userId);
 		}
 
 		[Authorize]

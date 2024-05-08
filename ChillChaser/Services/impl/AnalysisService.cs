@@ -57,7 +57,7 @@ namespace ChillChaser.Services.impl {
 					hr."DateTime" > series.interval_begin 
 					AND hr."DateTime" < (series.interval_end)
 					AND hr."UserId" = {userId}
-			) hr_data;
+			) hr_data
 			""").ToListAsync();
 			return dataWithHoles;
 		}
@@ -72,6 +72,7 @@ namespace ChillChaser.Services.impl {
 			WHERE au."From" >= {dateRange.From} AND au."To" <= {dateRange.To} 
 				AND au."UserId" = {userId} AND hr."UserId" = {userId}
 			GROUP BY au."AppId", a."Name"
+			ORDER BY AVG(hr."Bpm") DESC
 			""").ToListAsync();
 		}
 
