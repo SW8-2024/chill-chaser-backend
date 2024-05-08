@@ -28,7 +28,7 @@ if (builder.Environment.IsDevelopment())
         Database = "chillchaser_db",
         Username = "chillchaser_user",
         Password = "password",
-        Port = 5555
+        Port = 6677
     }).ToString();
 } 
 else

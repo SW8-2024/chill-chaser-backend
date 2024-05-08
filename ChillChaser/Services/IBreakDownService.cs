@@ -9,5 +9,6 @@ namespace ChillChaser.Services {
 		Task<IEnumerable<DailyStressDataPoint>> GetDailyStress(CCDbContext ctx, string userId, DateOnlyRange dateRange);
 		Task<StressMetrics> GetStressMetrics(CCDbContext ctx, string userId, DateOnlyRange dateRange);
 		Task<double> GetLatestHeartRate(CCDbContext ctx, string userId);
+		Task<IEnumerable<AppUsageAnalysis>> GetAppUsageAnalysis(CCDbContext ctx, string userId);
 	}
 }

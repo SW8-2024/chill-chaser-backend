@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Security.Claims;
 
@@ -69,9 +70,6 @@ namespace ChillChaser.Controllers {
             await _appUsageService.AddAppUsage(_ctx, model, userId);
             await _ctx.SaveChangesAsync();
             return Ok();
-
-			await _ctx.SaveChangesAsync();
-			return Ok();
 		}
 
 		[Authorize]
@@ -142,50 +140,89 @@ namespace ChillChaser.Controllers {
 		}
 
 		[Authorize]
-		[HttpGet("breakdown", Name = "BreakDown")]
-		[ProducesResponseType(typeof(GetBreakdownDataResponse), 200)]
-		public async Task<IActionResult> BreakDown(DateTime date) {
-			if (date < new DateTime(2020, 1, 1)) {
-				return BadRequest();
-			}
+		[HttpPost("add-test-data", Name = "AddTestData")]
+		public async Task AddTestData() {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)
+                ?? throw new Exception("No user id");
 
-			var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)
-				?? throw new Exception("No user id");
+			var end = DateTime.UtcNow;
+			var start = end.AddDays(-5);
 
-			var analysisRange = _breakDownService.GetLastMonthRange(date);
 
-			var stressByApp = await _breakDownService.GetStressByApp(_ctx, userId, analysisRange);
-			var dailyStress = await _breakDownService.GetDailyStress(_ctx, userId, analysisRange);
-			var stressMetrics = await _breakDownService.GetStressMetrics(_ctx, userId, analysisRange);
+			double currentBpm = 80;
+            Random rnd = new Random();
 
-			return Ok(new GetBreakdownDataResponse {
-				AverageStress = stressMetrics.Average,
-				DailyStressDataPoints = dailyStress,
-				StressByApp = stressByApp
-			});
-		}
+            for (DateTime current = start; current < end; current = current.AddSeconds(4 + rnd.NextDouble()))
+			{
+				_ctx.HeartRates.Add(new HeartRate
+				{
+					Bpm = (int) currentBpm,
+					DateTime = current,
+					UserId = userId
+				});
 
-		[Authorize]
-		[HttpGet("stress-metrics", Name = "StressMetrics")]
-		[ProducesResponseType(typeof(GetStressMetricsResponse), 200)]
-		public async Task<IActionResult> StressMetrics(DateTime date) {
-			if (date < new DateTime(2020, 1, 1)) {
-				return BadRequest();
-			}
+				currentBpm += (rnd.NextDouble() - 0.5);
 
-			var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)
-				?? throw new Exception("No user id");
+            }
 
-			var todayRange = _breakDownService.GetTodayRange(date);
-			var metrics = await _breakDownService.GetStressMetrics(ctx, userId, todayRange);
-			var latestHeartRate = await _breakDownService.GetLatestHeartRate(ctx, userId);
-			return Ok(new GetStressMetricsResponse {
-				Min = metrics.Min,
-				Average = metrics.Average,
-				Max = metrics.Max,
-				Latest = latestHeartRate
-			});
-		}
+			List<List<AppSession>> appUsages = new()
+			{
+				new List<AppSession>(),
+                new List<AppSession>(),
+                new List<AppSession>(),
+                new List<AppSession>()
+            };
+			DateTime sessionBegin = start;
 
-	}
+			for (DateTime current = start; current < end; current = current.AddMinutes(1 + rnd.NextDouble() * 3))
+			{
+				var decision = rnd.Next(0, 100);
+				if (decision < appUsages.Count) {
+					appUsages[decision].Add(new AppSession
+					{
+						From = sessionBegin,
+						To = current
+					});
+					sessionBegin = current;
+                } else if (decision < 7)
+				{
+					sessionBegin = current;
+                }
+            }
+            await _ctx.SaveChangesAsync();
+			await _appUsageService.AddAppUsage(_ctx, new List<CreateAppUsage>()
+			{
+                new CreateAppUsage
+                {
+                    AppName = "app 1",
+                    Sessions = appUsages[0]
+                },
+                new CreateAppUsage
+                {
+                    AppName = "app 2",
+                    Sessions = appUsages[1]
+                },
+                new CreateAppUsage
+                {
+                    AppName = "app 3",
+                    Sessions = appUsages[2]
+                },
+                new CreateAppUsage
+                {
+                    AppName = "app 4",
+                    Sessions = appUsages[3]
+                },
+            }, userId);
+        }
+
+        [Authorize]
+        [HttpPost("clear-data", Name = "ClearData")]
+        public async Task ClearData()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)
+                ?? throw new Exception("No user id");
+			await _ctx.HeartRates.Where(hr => hr.UserId == userId).ExecuteDeleteAsync();
+			await _ctx.AppUsages.Where(hr => hr.UserId == userId).ExecuteDeleteAsync();
+        }
+    }
 }
