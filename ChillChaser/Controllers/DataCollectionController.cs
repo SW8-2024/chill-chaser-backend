@@ -169,6 +169,10 @@ namespace ChillChaser.Controllers {
 		[HttpGet("stress-metrics", Name = "StressMetrics")]
 		[ProducesResponseType(typeof(GetStressMetricsResponse), 200)]
 		public async Task<IActionResult> StressMetrics(DateTime date) {
+			if (date < new DateTime(2020, 1, 1)) {
+				return BadRequest();
+			}
+
 			var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)
 				?? throw new Exception("No user id");
 
