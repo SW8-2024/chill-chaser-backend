@@ -5,8 +5,8 @@ using System.Xml.Linq;
 
 namespace ChillChaser.Models.DB
 {
-    [Index(nameof(DateTime), nameof(UserId), IsUnique = false, Name = "datetime_userid_idx")]
-    [Index(nameof(DateTime), nameof(UserId), IsUnique = false, Name = "datetime_idx")]
+    [Index(nameof(UserId), nameof(DateTime), IsUnique = false, Name = "datetime_userid_idx")]
+    [Index(nameof(DateTime), IsUnique = false, Name = "datetime_idx")]
     public class HeartRate
     {
         public int Id { get; set; }
