@@ -2,7 +2,7 @@
 using ChillChaser.Models.Response;
 
 namespace ChillChaser.Services {
-	public interface IBreakDownService {
+	public interface IAnalysisService {
 		DateOnlyRange GetLastMonthRange(DateTime now);
 		DateOnlyRange GetTodayRange(DateTime now);
 		Task<IEnumerable<StressByAppDataPoint>> GetStressByApp(CCDbContext ctx, string userId, DateOnlyRange dateRange);

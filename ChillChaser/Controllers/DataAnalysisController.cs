@@ -8,7 +8,7 @@ namespace ChillChaser.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class DataAnalysisController(IBreakDownService breakDownService, CCDbContext ctx) : ControllerBase
+    public class DataAnalysisController(IAnalysisService breakDownService, CCDbContext ctx) : ControllerBase
     {
         [Authorize]
         [HttpGet("breakdown", Name = "BreakDown")]

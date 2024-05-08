@@ -1,10 +1,9 @@
 ﻿using ChillChaser.Models.Internal;
 using ChillChaser.Models.Response;
 using Microsoft.EntityFrameworkCore;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ChillChaser.Services.impl {
-	public class BreakDownService : IBreakDownService {
+	public class AnalysisService : IAnalysisService {
 		public DateOnlyRange GetLastMonthRange(DateTime date) {
 			var endTime = new DateOnly(date.Year, date.Month, date.Day).AddDays(1);
 			var startTime = endTime.AddMonths(-1);

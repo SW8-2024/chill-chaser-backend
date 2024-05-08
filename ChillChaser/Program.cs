@@ -78,7 +78,7 @@ builder.Services.AddTransient<INotificationService, NotificationService>();
 builder.Services.AddTransient<IAppUsageService, AppUsageService>();
 builder.Services.AddTransient<IHeartRateService, HeartRateService>();
 builder.Services.AddSingleton<IWatchAuthService, WatchAuthService>();
-builder.Services.AddSingleton<IBreakDownService, BreakDownService>();
+builder.Services.AddSingleton<IAnalysisService, AnalysisService>();
 
 var app = builder.Build();
 

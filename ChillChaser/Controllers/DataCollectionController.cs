@@ -20,13 +20,13 @@ namespace ChillChaser.Controllers {
 		IAppUsageService appUsageService,
 		INotificationService notificationService,
 		IHeartRateService heartRateService,
-		IBreakDownService breakDownService
+		IAnalysisService breakDownService
 	) : ControllerBase {
 		private readonly CCDbContext _ctx = ctx;
 		private readonly IAppUsageService _appUsageService = appUsageService;
 		private readonly INotificationService _notificationService = notificationService;
 		private readonly IHeartRateService _heartRateService = heartRateService;
-		private readonly IBreakDownService _breakDownService = breakDownService;
+		private readonly IAnalysisService _breakDownService = breakDownService;
 
 		[Authorize]
 		[HttpPost("notification", Name = "CreateNotification")]
@@ -61,15 +61,15 @@ namespace ChillChaser.Controllers {
 			return Ok(await notificationsMapped.ToListAsync());
 		}
 
-        [Authorize]
-        [HttpPost("app-usage", Name = "CreateAppUsage")]
-        public async Task<IActionResult> CreateAppUsage(IEnumerable<CreateAppUsage> model)
-        {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)
-                    ?? throw new Exception("No user id");
-            await _appUsageService.AddAppUsage(_ctx, model, userId);
-            await _ctx.SaveChangesAsync();
-            return Ok();
+		[Authorize]
+		[HttpPost("app-usage", Name = "CreateAppUsage")]
+		public async Task<IActionResult> CreateAppUsage(IEnumerable<CreateAppUsage> model)
+		{
+			var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)
+					?? throw new Exception("No user id");
+			await _appUsageService.AddAppUsage(_ctx, model, userId);
+			await _ctx.SaveChangesAsync();
+			return Ok();
 		}
 
 		[Authorize]
@@ -142,17 +142,17 @@ namespace ChillChaser.Controllers {
 		[Authorize]
 		[HttpPost("add-test-data", Name = "AddTestData")]
 		public async Task AddTestData() {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)
-                ?? throw new Exception("No user id");
+			var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)
+				?? throw new Exception("No user id");
 
 			var end = DateTime.UtcNow;
 			var start = end.AddDays(-5);
 
 
 			double currentBpm = 80;
-            Random rnd = new Random();
+			Random rnd = new Random();
 
-            for (DateTime current = start; current < end; current = current.AddSeconds(4 + rnd.NextDouble()))
+			for (DateTime current = start; current < end; current = current.AddSeconds(4 + rnd.NextDouble()))
 			{
 				_ctx.HeartRates.Add(new HeartRate
 				{
@@ -163,15 +163,15 @@ namespace ChillChaser.Controllers {
 
 				currentBpm += (rnd.NextDouble() - 0.5);
 
-            }
+			}
 
 			List<List<AppSession>> appUsages = new()
 			{
 				new List<AppSession>(),
-                new List<AppSession>(),
-                new List<AppSession>(),
-                new List<AppSession>()
-            };
+				new List<AppSession>(),
+				new List<AppSession>(),
+				new List<AppSession>()
+			};
 			DateTime sessionBegin = start;
 
 			for (DateTime current = start; current < end; current = current.AddMinutes(1 + rnd.NextDouble() * 3))
@@ -184,45 +184,45 @@ namespace ChillChaser.Controllers {
 						To = current
 					});
 					sessionBegin = current;
-                } else if (decision < 7)
+				} else if (decision < 7)
 				{
 					sessionBegin = current;
-                }
-            }
-            await _ctx.SaveChangesAsync();
+				}
+			}
+			await _ctx.SaveChangesAsync();
 			await _appUsageService.AddAppUsage(_ctx, new List<CreateAppUsage>()
 			{
-                new CreateAppUsage
-                {
-                    AppName = "app 1",
-                    Sessions = appUsages[0]
-                },
-                new CreateAppUsage
-                {
-                    AppName = "app 2",
-                    Sessions = appUsages[1]
-                },
-                new CreateAppUsage
-                {
-                    AppName = "app 3",
-                    Sessions = appUsages[2]
-                },
-                new CreateAppUsage
-                {
-                    AppName = "app 4",
-                    Sessions = appUsages[3]
-                },
-            }, userId);
-        }
+				new CreateAppUsage
+				{
+					AppName = "app 1",
+					Sessions = appUsages[0]
+				},
+				new CreateAppUsage
+				{
+					AppName = "app 2",
+					Sessions = appUsages[1]
+				},
+				new CreateAppUsage
+				{
+					AppName = "app 3",
+					Sessions = appUsages[2]
+				},
+				new CreateAppUsage
+				{
+					AppName = "app 4",
+					Sessions = appUsages[3]
+				},
+			}, userId);
+		}
 
-        [Authorize]
-        [HttpPost("clear-data", Name = "ClearData")]
-        public async Task ClearData()
-        {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)
-                ?? throw new Exception("No user id");
+		[Authorize]
+		[HttpPost("clear-data", Name = "ClearData")]
+		public async Task ClearData()
+		{
+			var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)
+				?? throw new Exception("No user id");
 			await _ctx.HeartRates.Where(hr => hr.UserId == userId).ExecuteDeleteAsync();
 			await _ctx.AppUsages.Where(hr => hr.UserId == userId).ExecuteDeleteAsync();
-        }
-    }
+		}
+	}
 }
