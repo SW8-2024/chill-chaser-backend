@@ -58,7 +58,8 @@ namespace ChillChaser.Controllers
                 Min = metrics.Min,
                 Average = metrics.Average,
                 Max = metrics.Max,
-                Latest = latestHeartRate
+                Latest = latestHeartRate.Value,
+                LatestDateTime = latestHeartRate.DateTime
             });
         }
 
