@@ -29,17 +29,19 @@ namespace ChillChaser.Services.impl {
 			};
 		}
 
-		public async Task<double> GetLatestHeartRate(CCDbContext ctx, string userId) {
-			return await ctx.Database.SqlQuery<double?>($"""
-			SELECT hr."Bpm" AS "Value"
-			FROM "HeartRates" hr
-			WHERE hr."UserId" = {userId}
-			ORDER BY hr."DateTime" DESC
-			LIMIT 1
-			""").SingleOrDefaultAsync() ?? 0;
+		public async Task<LatestHeartRate> GetLatestHeartRate(CCDbContext ctx, string userId) {
+			return await ctx.Database.SqlQuery<LatestHeartRate?>($"""
+				SELECT hr."Bpm" AS "Value", hr."DateTime"
+				FROM "HeartRates" hr
+				WHERE hr."UserId" = {userId}
+				ORDER BY hr."DateTime" DESC
+				LIMIT 1
+			""").SingleOrDefaultAsync() ?? new LatestHeartRate {
+				Value = 0,
+				DateTime = DateTime.MinValue
+			};
 		}
 
-		//TODO: Test
 		public async Task<IEnumerable<DailyStressDataPoint>> GetDailyStress(CCDbContext ctx, string userId, DateOnlyRange dateRange) {
 			var dataWithHoles = await ctx.Database.SqlQuery<DailyStressDataPoint>($"""
 			SELECT series.interval_begin AS "Date", hr_data.hr_avg as "Value"
