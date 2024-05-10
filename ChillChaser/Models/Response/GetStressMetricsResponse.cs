@@ -4,5 +4,6 @@
 		public required double Average { get; set; }
 		public required double Max { get; set; }
 		public required double Latest { get; set; }
+		public required DateTime LatestDateTime { get; set; }
 	}
 }
