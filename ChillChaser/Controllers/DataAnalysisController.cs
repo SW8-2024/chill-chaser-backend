@@ -8,7 +8,7 @@ namespace ChillChaser.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class DataAnalysisController(IAnalysisService breakDownService, CCDbContext ctx) : ControllerBase
+    public class DataAnalysisController(IAnalysisService analysisService, CCDbContext ctx) : ControllerBase
     {
         [Authorize]
         [HttpGet("breakdown", Name = "BreakDown")]
@@ -23,11 +23,11 @@ namespace ChillChaser.Controllers
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)
                 ?? throw new Exception("No user id");
 
-            var analysisRange = breakDownService.GetLastMonthRange(date);
+            var analysisRange = analysisService.GetLastMonthRange(date);
 
-            var stressByApp = await breakDownService.GetStressByApp(ctx, userId, analysisRange);
-            var dailyStress = await breakDownService.GetDailyStress(ctx, userId, analysisRange);
-            var stressMetrics = await breakDownService.GetStressMetrics(ctx, userId, analysisRange);
+            var stressByApp = await analysisService.GetStressByApp(ctx, userId, analysisRange);
+            var dailyStress = await analysisService.GetDailyStress(ctx, userId, analysisRange);
+            var stressMetrics = await analysisService.GetStressMetrics(ctx, userId, analysisRange);
 
             return Ok(new GetBreakdownDataResponse
             {
@@ -50,9 +50,9 @@ namespace ChillChaser.Controllers
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)
                 ?? throw new Exception("No user id");
 
-            var todayRange = breakDownService.GetTodayRange(date);
-            var metrics = await breakDownService.GetStressMetrics(ctx, userId, todayRange);
-            var latestHeartRate = await breakDownService.GetLatestHeartRate(ctx, userId);
+            var todayRange = analysisService.GetTodayRange(date);
+            var metrics = await analysisService.GetStressMetrics(ctx, userId, todayRange);
+            var latestHeartRate = await analysisService.GetLatestHeartRate(ctx, userId);
             return Ok(new GetStressMetricsResponse
             {
                 Min = metrics.Min,
@@ -71,10 +71,35 @@ namespace ChillChaser.Controllers
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)
                 ?? throw new Exception("No user id");
 
-            var appUsageAnalysis = await breakDownService.GetAppUsageAnalysis(ctx, userId);
+            var appUsageAnalysis = await analysisService.GetAppUsageAnalysis(ctx, userId);
 
             return Ok(new AppUsageAnalysisResponse {
                 AppUsageAnalysis = appUsageAnalysis
+            });
+        }
+
+        [Authorize]
+        [HttpGet("per-app-per-day-usage-analysis", Name = "PerAppPerDayUsageAnalysis")]
+        [ProducesResponseType(typeof(PerAppPerDayUsageResponse), 200)]
+        public async Task<IActionResult> PerAppPerDayUsageAnalysis(DateTime endOfDay, string appName) {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)
+                ?? throw new Exception("No user id");
+            
+            return Ok(new PerAppPerDayUsageResponse {
+                AppUsageForAppAndDays = await analysisService.GetAppPerDayUsageAnalysis(ctx, userId, endOfDay, appName)
+            });
+        }
+
+        [Authorize]
+        [HttpGet("analysis-for-day-and-app", Name = "AnalysisForDayAndApp")]
+        [ProducesResponseType(typeof(AnalysisForDayAndAppResponse), 200)]
+        public async Task<IActionResult> AnalysisForDayAndApp(DateTime endOfDay, string appName) {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)
+                    ?? throw new Exception("No user id");
+
+            return Ok(new AnalysisForDayAndAppResponse {
+                AppUsageAnalysis = await analysisService.GetAppUsageForDay(ctx, userId, endOfDay, appName),
+                HighResolutionStress = await analysisService.GetHighResolutionStressForDayAndApp(ctx, userId, appName, endOfDay)
             });
         }
     }
