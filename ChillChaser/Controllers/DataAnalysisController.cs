@@ -102,5 +102,11 @@ namespace ChillChaser.Controllers
                 HighResolutionStress = await analysisService.GetHighResolutionStressForDayAndApp(ctx, userId, appName, endOfDay)
             });
         }
+
+        [HttpPost("refresh-analysis", Name = "RefreshAnalysis")]
+        public async Task<IActionResult> RefreshAnalysis() {
+            await analysisService.RefreshAnalysis(ctx);
+            return Ok();
+        }
     }
 }

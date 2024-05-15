@@ -13,5 +13,6 @@ namespace ChillChaser.Services {
 		Task<IEnumerable<AppUsageForAppAndDay>> GetAppPerDayUsageAnalysis(CCDbContext ctx, string userId, DateTime endOfDay, string appName);
 		Task<IEnumerable<AppUsageAnalysis>> GetAppUsageForDay(CCDbContext ctx, string userId, DateTime endOfay, string appName);
 		Task<IEnumerable<StressValueAndUsage>> GetHighResolutionStressForDayAndApp(CCDbContext ctx, string userId, string appName, DateTime endOfDay);
+		Task RefreshAnalysis(CCDbContext ctx);
 	}
 }

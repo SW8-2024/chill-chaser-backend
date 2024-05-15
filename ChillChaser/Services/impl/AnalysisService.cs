@@ -214,7 +214,13 @@ namespace ChillChaser.Services.impl {
 					AND hr."UserId" = {userId}
 			) hr_data
 			""").ToListAsync();
-			
+		}
+
+		public async Task RefreshAnalysis(CCDbContext ctx) {
+			await ctx.Database.ExecuteSqlAsync($"""
+				REFRESH MATERIALIZED VIEW "ReferencialStress";
+				REFRESH MATERIALIZED VIEW "AppUsageStress";
+			""");
 		}
 	}
 }
