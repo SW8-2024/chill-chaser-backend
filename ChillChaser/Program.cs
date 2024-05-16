@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
+using ChillChaser.HostedService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -79,6 +80,7 @@ builder.Services.AddTransient<IAppUsageService, AppUsageService>();
 builder.Services.AddTransient<IHeartRateService, HeartRateService>();
 builder.Services.AddSingleton<IWatchAuthService, WatchAuthService>();
 builder.Services.AddSingleton<IAnalysisService, AnalysisService>();
+builder.Services.AddHostedService<RefreshAnalysisHostedService>();
 
 var app = builder.Build();
 
