@@ -146,13 +146,13 @@ namespace ChillChaser.Controllers {
 				?? throw new Exception("No user id");
 
 			var end = DateTime.UtcNow;
-			var start = end.AddDays(-5);
+			var start = end.AddDays(-30);
 
 
 			double currentBpm = 80;
 			Random rnd = new Random();
 
-			for (DateTime current = start; current < end; current = current.AddSeconds(4 + rnd.NextDouble()))
+			for (DateTime current = start; current < end; current = current.AddSeconds(10 + rnd.NextDouble()))
 			{
 				_ctx.HeartRates.Add(new HeartRate
 				{
