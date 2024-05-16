@@ -158,8 +158,8 @@ namespace ChillChaser.Services.impl {
 			""").ToListAsync();
 		}
 
-		public async Task<IEnumerable<AppUsageAnalysis>> GetAppUsageForDay(CCDbContext ctx, string userId, DateTime endOfDay, string appName) {
-			return ctx.Database.SqlQuery<AppUsageAnalysis>($"""
+		public async Task<IEnumerable<SingleAppUsageAnalysis>> GetAppUsageForDay(CCDbContext ctx, string userId, DateTime endOfDay, string appName) {
+			return await ctx.Database.SqlQuery<SingleAppUsageAnalysis>($"""
 			SELECT 
 				au."Id",
 				rs."ReferenceStress",
@@ -178,7 +178,7 @@ namespace ChillChaser.Services.impl {
 				au."From" <= {endOfDay} AND
 				a."Name" = {appName}
 			GROUP BY au."Id", au."To", au."From", rs."ReferenceStress", aus."AverageStress", a."Name"
-			""");
+			""").ToListAsync();
 
 		}
 
