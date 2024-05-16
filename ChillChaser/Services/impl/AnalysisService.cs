@@ -155,6 +155,7 @@ namespace ChillChaser.Services.impl {
 					a."Name" = {appName}
 			) "data"
 			WHERE "data"."ReferenceStress" IS NOT NULL AND "data"."AverageStress" IS NOT NULL
+			ORDER BY series.interval_begin
 			""").ToListAsync();
 		}
 
@@ -162,6 +163,7 @@ namespace ChillChaser.Services.impl {
 			return await ctx.Database.SqlQuery<SingleAppUsageAnalysis>($"""
 			SELECT 
 				au."Id",
+				au."From" as "AppUsageStart",
 				rs."ReferenceStress",
 				aus."AverageStress",
 				AGE(au."To", au."From") as "Usage"
@@ -178,6 +180,7 @@ namespace ChillChaser.Services.impl {
 				au."From" <= {endOfDay} AND
 				a."Name" = {appName}
 			GROUP BY au."Id", au."To", au."From", rs."ReferenceStress", aus."AverageStress", a."Name"
+			ORDER BY "AppUsageStart" DESC
 			""").ToListAsync();
 
 		}
@@ -213,6 +216,7 @@ namespace ChillChaser.Services.impl {
 					AND hr."DateTime" <= series.interval_end
 					AND hr."UserId" = {userId}
 			) hr_data
+			ORDER BY series.interval_begin
 			""").ToListAsync();
 		}
 
