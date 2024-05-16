@@ -9,17 +9,20 @@ namespace ChillChaser.HostedService
             logger.LogInformation("Refresh Analysis Hosted Service running.");
 
             using PeriodicTimer timer = new(TimeSpan.FromMinutes(5));
-
-            try
+            while (await timer.WaitForNextTickAsync(stoppingToken))
             {
-                while (await timer.WaitForNextTickAsync(stoppingToken))
+                try
                 {
                     await DoWork();
                 }
-            }
-            catch (OperationCanceledException)
-            {
-                logger.LogInformation("Refresh Analysis Hosted Service is stopping.");
+                catch (OperationCanceledException)
+                {
+                    logger.LogInformation("Refresh Analysis Hosted Service is stopping.");
+                }
+                catch (Exception e)
+                {
+                    logger.LogError("Refresh analysis failed: {Error}", e);
+                }
             }
         }
 
