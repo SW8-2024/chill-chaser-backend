@@ -11,7 +11,7 @@ namespace ChillChaser.Services {
 		Task<LatestHeartRate> GetLatestHeartRate(CCDbContext ctx, string userId);
 		Task<IEnumerable<AppUsageAnalysis>> GetAppUsageAnalysis(CCDbContext ctx, string userId);
 		Task<IEnumerable<AppUsageForAppAndDay>> GetAppPerDayUsageAnalysis(CCDbContext ctx, string userId, DateTime endOfDay, string appName);
-		Task<IEnumerable<AppUsageAnalysis>> GetAppUsageForDay(CCDbContext ctx, string userId, DateTime endOfay, string appName);
+		Task<IEnumerable<SingleAppUsageAnalysis>> GetAppUsageForDay(CCDbContext ctx, string userId, DateTime endOfay, string appName);
 		Task<IEnumerable<StressValueAndUsage>> GetHighResolutionStressForDayAndApp(CCDbContext ctx, string userId, string appName, DateTime endOfDay);
 		Task RefreshAnalysis(CCDbContext ctx);
 	}
