@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChillChaser", "ChillChaser\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "E2ETest", "E2ETest\E2ETest.csproj", "{3CDFD47A-9430-4A5A-B0FA-B8BD08762452}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChillChaser.UnitTests", "ChillChaser.UnitTests\ChillChaser.UnitTests.csproj", "{3B8646DF-9091-47E2-9C81-91904057FD96}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{3CDFD47A-9430-4A5A-B0FA-B8BD08762452}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3CDFD47A-9430-4A5A-B0FA-B8BD08762452}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3CDFD47A-9430-4A5A-B0FA-B8BD08762452}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3B8646DF-9091-47E2-9C81-91904057FD96}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3B8646DF-9091-47E2-9C81-91904057FD96}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3B8646DF-9091-47E2-9C81-91904057FD96}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3B8646DF-9091-47E2-9C81-91904057FD96}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
