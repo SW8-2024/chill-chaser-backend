@@ -180,6 +180,7 @@ namespace ChillChaser.Services.impl {
 				au."From" <= {endOfDay} AND
 				a."Name" = {appName}
 			GROUP BY au."Id", au."To", au."From", rs."ReferenceStress", aus."AverageStress", a."Name"
+			HAVING aus."AverageStress" IS NOT NULL
 			ORDER BY "AppUsageStart" DESC
 			""").ToListAsync();
 
