@@ -203,14 +203,22 @@ namespace ChillChaser.Services.impl {
 					COALESCE(bool_or(hr."AppOpen"), FALSE) as "AppOpen"
 				FROM
 					(
-						SELECT hr."Id", hr."Bpm", hr."UserId", a."Name" AS "AppName", hr."DateTime", bool_or(au."Id" IS NOT NULL) AS "AppOpen" FROM 
+						SELECT hr."Id", hr."Bpm", hr."UserId", hr."DateTime", bool_or(au."Id" IS NOT NULL) AS "AppOpen" FROM 
 							"HeartRates" hr
-						LEFT JOIN "AppUsages" au ON
-							au."From" <= hr."DateTime" AND au."To" >= hr."DateTime" AND hr."UserId" = au."UserId"
-						LEFT JOIN "Apps" a ON
-							a."Id" = au."AppId"
+						LEFT JOIN (
+							SELECT 
+								au."Id", au."From", au."To", au."UserId", au."AppId"
+							FROM 
+								"AppUsages" au
+							LEFT JOIN "Apps" a ON
+								a."Id" = au."AppId"
+							WHERE a."Name"={appName}
+						) au ON
+							au."From" <= hr."DateTime"
+							AND au."To" >= hr."DateTime"
+							AND hr."UserId" = au."UserId"
 						GROUP BY
-							hr."Id", hr."Bpm", hr."UserId", hr."DateTime", a."Name"
+							hr."Id", hr."Bpm", hr."UserId", hr."DateTime"
 					) hr
 				WHERE
 					hr."DateTime" >= series.interval_begin
