@@ -68,14 +68,14 @@ namespace ChillChaser.Services.impl {
 		public async Task<IEnumerable<StressByAppDataPoint>> GetStressByApp(CCDbContext ctx, string userId, DateOnlyRange dateRange) {
 			return await ctx.Database.SqlQuery<StressByAppDataPoint>($"""
 			SELECT 
-				a."Name" as "Name", AVG(hr."Bpm") AS "Value"
+				a."Name" as "Name", AVG(aus."AverageStress") as "Value"
 			FROM "AppUsages" au
-				JOIN "HeartRates" hr ON hr."DateTime" >= au."From" AND hr."DateTime" <= au."To"
+				JOIN "AppUsageStress" aus ON aus."AppUsageId" = au."Id"
 				JOIN "Apps" a ON a."Id" = au."AppId"
 			WHERE au."From" >= {dateRange.From} AND au."To" <= {dateRange.To} 
-				AND au."UserId" = {userId} AND hr."UserId" = {userId}
+				AND au."UserId" = {userId}
 			GROUP BY au."AppId", a."Name"
-			ORDER BY AVG(hr."Bpm") DESC
+			ORDER BY AVG(aus."AverageStress") DESC
 			""").ToListAsync();
 		}
 
@@ -231,8 +231,8 @@ namespace ChillChaser.Services.impl {
 
 		public async Task RefreshAnalysis(CCDbContext ctx) {
 			await ctx.Database.ExecuteSqlAsync($"""
-				REFRESH MATERIALIZED VIEW "ReferencialStress";
-				REFRESH MATERIALIZED VIEW "AppUsageStress";
+				REFRESH MATERIALIZED VIEW CONCURRENTLY "ReferencialStress";
+				REFRESH MATERIALIZED VIEW CONCURRENTLY "AppUsageStress";
 			""");
 		}
 	}
