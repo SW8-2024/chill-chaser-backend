@@ -19,7 +19,8 @@ namespace ChillChaser.Services.impl {
 		public async Task<string> WaitForAuth(string sessionToken) {
 			var taskCompletionSource = new TaskCompletionSource<string>();
 			var tokenExpiresMs = 10 * 60 * 1000;
-			try {
+			try
+			{
 				var wasAdded = _authSessions.TryAdd(sessionToken, new WatchAuthSession
 				{
 					Token = sessionToken,
@@ -27,23 +28,33 @@ namespace ChillChaser.Services.impl {
 					TaskCompletionSource = taskCompletionSource
 				});
 
-				if (!wasAdded) {
+				if (!wasAdded)
+				{
 					throw new TokenAlreadyUsedException("Given token is already used");
 				}
 
 				var task = await Task.WhenAny(
-					Task.Run(async () => { return (string?) await taskCompletionSource.Task; }),
+					Task.Run(async () => { return (string?)await taskCompletionSource.Task; }),
 					Task.Run(async () => { await Task.Delay(tokenExpiresMs); return (string?)null; })
 				);
 				var value = await task;
 				_authSessions.TryRemove(sessionToken, out _);
-				if (value == null) {
+				if (value == null)
+				{
 					taskCompletionSource.SetCanceled();
 					throw new WatchAuthSessionTimeoutException("The auth session expired");
-				} else {
+				}
+				else
+				{
 					return value;
 				}
-			} catch {
+			}
+			catch (TokenAlreadyUsedException)
+			{
+				throw;
+			}
+			catch
+			{
 				_authSessions.TryRemove(sessionToken, out _);
 				throw;
 			}
