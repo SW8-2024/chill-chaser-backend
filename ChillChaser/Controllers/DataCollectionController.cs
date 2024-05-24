@@ -21,7 +21,8 @@ namespace ChillChaser.Controllers {
 		INotificationService notificationService,
 		IHeartRateService heartRateService,
 		IAnalysisService breakDownService
-	) : ControllerBase {
+	) : ControllerBase
+	{
 		private readonly CCDbContext _ctx = ctx;
 		private readonly IAppUsageService _appUsageService = appUsageService;
 		private readonly INotificationService _notificationService = notificationService;
@@ -30,7 +31,8 @@ namespace ChillChaser.Controllers {
 
 		[Authorize]
 		[HttpPost("notification", Name = "CreateNotification")]
-		public async Task<IActionResult> CreateNotification(CreateNotification model) {
+		public async Task<IActionResult> CreateNotification(CreateNotification model)
+		{
 			var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)
 					?? throw new Exception("No user id");
 
@@ -44,13 +46,15 @@ namespace ChillChaser.Controllers {
 		[Authorize]
 		[HttpGet("notification", Name = "GetNotifications")]
 		[ProducesResponseType(typeof(GetNotificationResponse), 200)]
-		public async Task<IActionResult> GetNotifications() {
+		public async Task<IActionResult> GetNotifications()
+		{
 			var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)
 					?? throw new Exception("No user id");
 
 			var notificationsMapped = from notification in _ctx.Notifications
 									  where notification.UserId == userId
-									  select new GetNotificationResponse {
+									  select new GetNotificationResponse
+									  {
 										  Id = notification.Id,
 										  Title = notification.Title,
 										  Content = notification.Content,
@@ -75,13 +79,15 @@ namespace ChillChaser.Controllers {
 		[Authorize]
 		[HttpGet("app-usage", Name = "GetAppUsage")]
 		[ProducesResponseType(typeof(GetAppUsageResponse), 200)]
-		public async Task<IActionResult> GetAppUsage() {
+		public async Task<IActionResult> GetAppUsage()
+		{
 			var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)
 					?? throw new Exception("No user id");
 
 			var appUsageMapped = from appUsage in _ctx.AppUsages
 								 where appUsage.UserId == userId
-								 select new GetAppUsageResponse {
+								 select new GetAppUsageResponse
+								 {
 									 Id = appUsage.Id,
 									 AppName = appUsage.App.Name,
 									 From = appUsage.From,
@@ -95,7 +101,8 @@ namespace ChillChaser.Controllers {
 		[HttpPost("heartRate", Name = "CreateHeartRate")]
 		[ProducesResponseType(StatusCodes.Status201Created)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public async Task<IActionResult> CreateHeartRate(CreateHeartRate model) {
+		public async Task<IActionResult> CreateHeartRate(CreateHeartRate model)
+		{
 			var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)
 						 ?? throw new Exception("No user id");
 			await _heartRateService.AddHeartRate(_ctx, model.Bpm, model.DateTime, userId);
@@ -107,14 +114,16 @@ namespace ChillChaser.Controllers {
 		[Authorize]
 		[HttpGet("heartRate", Name = "GetHeartRate")]
 		[ProducesResponseType(typeof(GetHeartRateResponse), 200)]
-		public async Task<IActionResult> GetHeartRate(DateTime? dateFrom, DateTime? to) {
+		public async Task<IActionResult> GetHeartRate(DateTime? dateFrom, DateTime? to)
+		{
 			var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)
 						 ?? throw new Exception("No user id");
 
 			var heartRateMapped = from heartRate in _ctx.HeartRates
 								  where heartRate.UserId == userId
 								  && heartRate.DateTime < to && heartRate.DateTime > dateFrom
-								  select new HeartRateResponse() {
+								  select new HeartRateResponse()
+								  {
 									  Id = heartRate.Id,
 									  Bpm = heartRate.Bpm,
 									  DateTime = heartRate.DateTime,
@@ -127,9 +136,11 @@ namespace ChillChaser.Controllers {
 
 		[HttpGet("leak", Name = "Leak")]
 		[ProducesResponseType(typeof(GetAppUsageResponse), 200)]
-		public async Task<IActionResult> Leak() {
+		public async Task<IActionResult> Leak()
+		{
 			var appUsageMapped = from appUsage in _ctx.AppUsages
-								 select new GetAppUsageResponse {
+								 select new GetAppUsageResponse
+								 {
 									 Id = appUsage.Id,
 									 AppName = appUsage.App.Name,
 									 From = appUsage.From,
@@ -141,7 +152,8 @@ namespace ChillChaser.Controllers {
 
 		[Authorize]
 		[HttpPost("add-test-data", Name = "AddTestData")]
-		public async Task AddTestData() {
+		public async Task AddTestData()
+		{
 			var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)
 				?? throw new Exception("No user id");
 
@@ -156,7 +168,7 @@ namespace ChillChaser.Controllers {
 			{
 				_ctx.HeartRates.Add(new HeartRate
 				{
-					Bpm = (int) currentBpm,
+					Bpm = (int)currentBpm,
 					DateTime = current,
 					UserId = userId
 				});
@@ -174,24 +186,27 @@ namespace ChillChaser.Controllers {
 			for (DateTime current = start; current < end; current = current.AddMinutes(1 + rnd.NextDouble() * 3))
 			{
 				var decision = rnd.Next(0, 100);
-				if (decision < appUsages.Count) {
+				if (decision < appUsages.Count)
+				{
 					appUsages[decision].Add(new AppSession
 					{
 						From = sessionBegin,
 						To = current
 					});
 					sessionBegin = current;
-				} else if (decision < appUsages.Count + 4)
+				}
+				else if (decision < appUsages.Count + 4)
 				{
 					sessionBegin = current;
 				}
 			}
 			await _ctx.SaveChangesAsync();
-			await _appUsageService.AddAppUsage(_ctx, appUsages.Select((u, i) => new CreateAppUsage {
-				
-					AppName = "app " + i.ToString(),
-					Sessions = u
-				
+			await _appUsageService.AddAppUsage(_ctx, appUsages.Select((u, i) => new CreateAppUsage
+			{
+
+				AppName = "app " + i.ToString(),
+				Sessions = u
+
 			}), userId);
 		}
 
@@ -204,5 +219,15 @@ namespace ChillChaser.Controllers {
 			await _ctx.HeartRates.Where(hr => hr.UserId == userId).ExecuteDeleteAsync();
 			await _ctx.AppUsages.Where(hr => hr.UserId == userId).ExecuteDeleteAsync();
 		}
+
+		[HttpPost("reset-test-environment", Name = "ResetTestEnvironment")]
+		public async Task ResetTestEnvironment()
+		{
+			await _ctx.HeartRates.Where(hr => (hr.User.Email ?? "").StartsWith("test_hrt")).ExecuteDeleteAsync();
+			await _ctx.AppUsages.Where(au => (au.User.Email ?? "").StartsWith("test_hrt")).ExecuteDeleteAsync();
+			await _ctx.HeartRates.Where(hr => (hr.User.Email ?? "").StartsWith("tucrazy")).ExecuteDeleteAsync();
+			await _ctx.AppUsages.Where(au => (au.User.Email ?? "").StartsWith("tucrazy")).ExecuteDeleteAsync();
+			await _ctx.Users.Where(u => (u.Email ?? "").StartsWith("tucrazy")).ExecuteDeleteAsync();
+        }
 	}
 }
